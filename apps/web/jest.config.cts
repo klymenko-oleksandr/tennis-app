@@ -1,9 +1,13 @@
 module.exports = {
   displayName: 'web',
   preset: '../../jest.preset.js',
+  setupFiles: ['<rootDir>/jest.setup.ts'],
   transform: {
     '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '@nx/react/plugins/jest',
-    '^.+\\.[tj]sx?$': ['babel-jest', { presets: ['@nx/react/babel'] }],
+    '^.+\\.[tj]sx?$': [
+      'babel-jest',
+      { presets: ['@nx/react/babel'], plugins: ['transform-vite-meta-env'] },
+    ],
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageDirectory: '../../coverage/apps/web',
