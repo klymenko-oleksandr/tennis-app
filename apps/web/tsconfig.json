@@ -4,7 +4,11 @@
     "allowJs": false,
     "allowSyntheticDefaultImports": true,
     "strict": true,
-    "types": ["vite/client", "node"]
+    "types": ["vite/client", "node"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "files": [],
   "include": [],
