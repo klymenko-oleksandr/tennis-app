@@ -30,7 +30,14 @@ function storeSession(session: Session | null) {
   } else {
     localStorage.removeItem(STORAGE_KEY);
   }
-  window.dispatchEvent(new CustomEvent(SESSION_CHANGED_EVENT, { detail: session }));
+  // Deferred: on the OAuth-redirect page load, AuthProvider and the page
+  // that calls storeSession() (inside a useEffect) mount in the same
+  // commit — React fires child effects before parent effects, so a
+  // synchronous dispatch here would fire before AuthProvider's listener
+  // (registered in its own effect, higher up the tree) has subscribed.
+  queueMicrotask(() => {
+    window.dispatchEvent(new CustomEvent(SESSION_CHANGED_EVENT, { detail: session }));
+  });
 }
 
 export function onSessionChange(callback: (session: Session | null) => void) {
