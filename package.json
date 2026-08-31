@@ -6,6 +6,7 @@
     "node": ">=20"
   },
   "scripts": {
+    "postinstall": "prisma generate",
     "dev": "docker compose up -d && concurrently -n API,WEB -c blue,green \"nx serve api\" \"nx serve web\"",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
