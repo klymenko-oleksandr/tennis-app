@@ -26,6 +26,12 @@ export function Layout() {
                   <Link to="/bookings">{t('layout.myBookings')}</Link>
                 </Button>
                 <Button asChild variant="ghost" size="sm">
+                  <Link to="/partners">{t('layout.partners')}</Link>
+                </Button>
+                <Button asChild variant="ghost" size="sm">
+                  <Link to="/invites">{t('layout.invites')}</Link>
+                </Button>
+                <Button asChild variant="ghost" size="sm">
                   <Link to="/profile">{user?.displayName ?? t('layout.profile')}</Link>
                 </Button>
                 <Button variant="outline" size="sm" onClick={() => signOut()}>

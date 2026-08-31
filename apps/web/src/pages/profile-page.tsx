@@ -3,8 +3,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Field, FieldGroup, FieldLabel } from '../components/ui/field';
+import { Field, FieldDescription, FieldGroup, FieldLabel } from '../components/ui/field';
 import { Input } from '../components/ui/input';
+import { Textarea } from '../components/ui/textarea';
 import { apiRequest } from '../lib/api-client';
 import { useAuth } from '../lib/auth-context';
 import type { UserProfile } from '../lib/types';
@@ -15,12 +16,14 @@ export function ProfilePage() {
   const queryClient = useQueryClient();
   const [displayName, setDisplayName] = useState('');
   const [ntrpLevel, setNtrpLevel] = useState('');
+  const [lookingToPlayNote, setLookingToPlayNote] = useState('');
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     if (user) {
       setDisplayName(user.displayName ?? '');
       setNtrpLevel(user.ntrpLevel != null ? String(user.ntrpLevel) : '');
+      setLookingToPlayNote(user.lookingToPlayNote ?? '');
     }
   }, [user]);
 
@@ -31,6 +34,7 @@ export function ProfilePage() {
         body: {
           displayName: displayName || null,
           ntrpLevel: ntrpLevel ? Number(ntrpLevel) : null,
+          lookingToPlayNote: lookingToPlayNote || null,
         },
       }),
     onSuccess: (updated) => {
@@ -73,6 +77,17 @@ export function ProfilePage() {
                 value={ntrpLevel}
                 onChange={(e) => setNtrpLevel(e.target.value)}
               />
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="lookingToPlay">{t('profile.lookingToPlay')}</FieldLabel>
+              <Textarea
+                id="lookingToPlay"
+                placeholder={t('profile.lookingToPlayPlaceholder')}
+                maxLength={280}
+                value={lookingToPlayNote}
+                onChange={(e) => setLookingToPlayNote(e.target.value)}
+              />
+              <FieldDescription>{t('profile.lookingToPlayHint')}</FieldDescription>
             </Field>
             <Button disabled={updateProfile.isPending} onClick={() => updateProfile.mutate()}>
               {updateProfile.isPending ? t('profile.saving') : saved ? t('profile.saved') : t('profile.save')}

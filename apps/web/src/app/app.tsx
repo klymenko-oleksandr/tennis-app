@@ -7,6 +7,8 @@ import { CourtsListPage } from '../pages/courts-list-page';
 import { CourtDetailPage } from '../pages/court-detail-page';
 import { BookingsPage } from '../pages/bookings-page';
 import { ProfilePage } from '../pages/profile-page';
+import { PartnersPage } from '../pages/partners-page';
+import { InvitesPage } from '../pages/invites-page';
 
 export function App() {
   return (
@@ -20,6 +22,8 @@ export function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/bookings" element={<BookingsPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/partners" element={<PartnersPage />} />
+          <Route path="/invites" element={<InvitesPage />} />
         </Route>
       </Route>
     </Routes>

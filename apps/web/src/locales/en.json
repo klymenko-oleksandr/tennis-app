@@ -6,6 +6,8 @@
   "layout": {
     "courts": "Courts",
     "myBookings": "My bookings",
+    "partners": "Find a partner",
+    "invites": "Invites",
     "profile": "Profile",
     "signIn": "Sign in",
     "signOut": "Sign out"
@@ -58,8 +60,34 @@
     "email": "Email",
     "displayName": "Display name",
     "ntrpLevel": "NTRP level",
+    "lookingToPlay": "Looking to play",
+    "lookingToPlayPlaceholder": "e.g. Evenings after 6pm, Obolon area",
+    "lookingToPlayHint": "Shown to other players when set. Clear it to stop appearing in Find a partner.",
     "save": "Save",
     "saving": "Saving…",
     "saved": "Saved"
+  },
+  "partners": {
+    "title": "Find a partner",
+    "empty": "No one's looking to play right now.",
+    "anonymous": "A player",
+    "ntrp": "NTRP {{level}}",
+    "invite": "Invite",
+    "invited": "Invited",
+    "errorGeneric": "Could not send the invite"
+  },
+  "invites": {
+    "receivedTitle": "Received",
+    "receivedEmpty": "No invites yet.",
+    "sentTitle": "Sent",
+    "sentEmpty": "You haven't invited anyone yet.",
+    "noBooking": "Just to play, no booking attached",
+    "accept": "Accept",
+    "decline": "Decline",
+    "status": {
+      "PENDING": "Pending",
+      "ACCEPTED": "Accepted",
+      "DECLINED": "Declined"
+    }
   }
 }

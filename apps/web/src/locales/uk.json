@@ -6,6 +6,8 @@
   "layout": {
     "courts": "Корти",
     "myBookings": "Мої бронювання",
+    "partners": "Знайти партнера",
+    "invites": "Запрошення",
     "profile": "Профіль",
     "signIn": "Увійти",
     "signOut": "Вийти"
@@ -58,8 +60,34 @@
     "email": "Email",
     "displayName": "Ім'я",
     "ntrpLevel": "Рівень NTRP",
+    "lookingToPlay": "Шукаю гру",
+    "lookingToPlayPlaceholder": "напр. Вечорами після 18:00, район Оболонь",
+    "lookingToPlayHint": "Показується іншим гравцям, якщо заповнено. Очистіть поле, щоб зникнути зі списку «Знайти партнера».",
     "save": "Зберегти",
     "saving": "Збереження…",
     "saved": "Збережено"
+  },
+  "partners": {
+    "title": "Знайти партнера",
+    "empty": "Зараз ніхто не шукає гру.",
+    "anonymous": "Гравець",
+    "ntrp": "NTRP {{level}}",
+    "invite": "Запросити",
+    "invited": "Запрошено",
+    "errorGeneric": "Не вдалося надіслати запрошення"
+  },
+  "invites": {
+    "receivedTitle": "Отримані",
+    "receivedEmpty": "Поки немає запрошень.",
+    "sentTitle": "Надіслані",
+    "sentEmpty": "Ви ще нікого не запросили.",
+    "noBooking": "Просто погратись, без бронювання",
+    "accept": "Прийняти",
+    "decline": "Відхилити",
+    "status": {
+      "PENDING": "Очікує",
+      "ACCEPTED": "Прийнято",
+      "DECLINED": "Відхилено"
+    }
   }
 }

@@ -42,4 +42,35 @@ export interface UserProfile {
   displayName: string | null;
   avatarUrl: string | null;
   ntrpLevel: number | null;
+  lookingToPlayNote?: string | null;
+}
+
+export interface PublicProfile {
+  id: string;
+  displayName: string | null;
+  ntrpLevel: number | null;
+  lookingToPlayNote: string | null;
+}
+
+export type PartnerMatchStatus = 'PENDING' | 'ACCEPTED' | 'DECLINED';
+
+export interface PartnerInviteSent {
+  id: string;
+  status: PartnerMatchStatus;
+  createdAt: string;
+  toUser: PublicProfile;
+  booking: (Booking & { court: Court }) | null;
+}
+
+export interface PartnerInviteReceived {
+  id: string;
+  status: PartnerMatchStatus;
+  createdAt: string;
+  fromUser: PublicProfile;
+  booking: (Booking & { court: Court }) | null;
+}
+
+export interface PartnerInvites {
+  sent: PartnerInviteSent[];
+  received: PartnerInviteReceived[];
 }
