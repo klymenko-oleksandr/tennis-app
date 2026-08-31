@@ -2,6 +2,9 @@
   "name": "@tennis-app/source",
   "version": "0.0.0",
   "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "docker compose up -d && concurrently -n API,WEB -c blue,green \"nx serve api\" \"nx serve web\"",
     "docker:up": "docker compose up -d",
