@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import { Badge } from '../components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
@@ -6,6 +7,7 @@ import { apiRequest } from '../lib/api-client';
 import type { Court } from '../lib/types';
 
 export function CourtsListPage() {
+  const { t } = useTranslation();
   const { data: courts, isLoading } = useQuery({
     queryKey: ['courts'],
     queryFn: () => apiRequest<Court[]>('/courts', { auth: false }),
@@ -13,8 +15,8 @@ export function CourtsListPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold">Courts</h1>
-      {isLoading && <p className="text-muted-foreground">Loading courts…</p>}
+      <h1 className="text-2xl font-semibold">{t('courts.title')}</h1>
+      {isLoading && <p className="text-muted-foreground">{t('courts.loading')}</p>}
       <div className="grid gap-4 sm:grid-cols-2">
         {courts?.map((court) => (
           <Link key={court.id} to={`/courts/${court.id}`}>
@@ -23,14 +25,14 @@ export function CourtsListPage() {
                 <CardTitle className="flex items-center justify-between gap-2">
                   <span>{court.name}</span>
                   <span className="text-sm font-normal text-muted-foreground">
-                    {court.pricePerHour} ₴/h
+                    {t('courts.pricePerHour', { price: court.pricePerHour })}
                   </span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Badge variant="secondary">{court.surface}</Badge>
                 <span>{court.area}</span>
-                {court.indoor && <Badge variant="outline">Indoor</Badge>}
+                {court.indoor && <Badge variant="outline">{t('courts.indoor')}</Badge>}
               </CardContent>
             </Card>
           </Link>

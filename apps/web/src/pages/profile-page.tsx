@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Field, FieldGroup, FieldLabel } from '../components/ui/field';
@@ -9,6 +10,7 @@ import { useAuth } from '../lib/auth-context';
 import type { UserProfile } from '../lib/types';
 
 export function ProfilePage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [displayName, setDisplayName] = useState('');
@@ -38,22 +40,22 @@ export function ProfilePage() {
     },
   });
 
-  if (!user) return <p className="text-muted-foreground">Loading…</p>;
+  if (!user) return <p className="text-muted-foreground">{t('common.loading')}</p>;
 
   return (
     <div className="mx-auto max-w-sm">
       <Card>
         <CardHeader>
-          <CardTitle>Profile</CardTitle>
+          <CardTitle>{t('profile.title')}</CardTitle>
         </CardHeader>
         <CardContent>
           <FieldGroup>
             <Field>
-              <FieldLabel htmlFor="email">Email</FieldLabel>
+              <FieldLabel htmlFor="email">{t('profile.email')}</FieldLabel>
               <Input id="email" value={user.email} disabled />
             </Field>
             <Field>
-              <FieldLabel htmlFor="displayName">Display name</FieldLabel>
+              <FieldLabel htmlFor="displayName">{t('profile.displayName')}</FieldLabel>
               <Input
                 id="displayName"
                 value={displayName}
@@ -61,7 +63,7 @@ export function ProfilePage() {
               />
             </Field>
             <Field>
-              <FieldLabel htmlFor="ntrp">NTRP level</FieldLabel>
+              <FieldLabel htmlFor="ntrp">{t('profile.ntrpLevel')}</FieldLabel>
               <Input
                 id="ntrp"
                 type="number"
@@ -73,7 +75,7 @@ export function ProfilePage() {
               />
             </Field>
             <Button disabled={updateProfile.isPending} onClick={() => updateProfile.mutate()}>
-              {updateProfile.isPending ? 'Saving…' : saved ? 'Saved' : 'Save'}
+              {updateProfile.isPending ? t('profile.saving') : saved ? t('profile.saved') : t('profile.save')}
             </Button>
           </FieldGroup>
         </CardContent>

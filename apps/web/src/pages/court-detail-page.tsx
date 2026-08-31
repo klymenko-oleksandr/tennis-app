@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Badge } from '../components/ui/badge';
@@ -26,6 +27,7 @@ function tomorrow() {
 }
 
 export function CourtDetailPage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const { session } = useAuth();
   const navigate = useNavigate();
@@ -65,11 +67,11 @@ export function CourtDetailPage() {
       navigate('/bookings');
     },
     onError: (err) => {
-      setError(err instanceof ApiError ? err.message : 'Could not create the booking');
+      setError(err instanceof ApiError ? err.message : t('courtDetail.errorGeneric'));
     },
   });
 
-  if (!court) return <p className="text-muted-foreground">Loading…</p>;
+  if (!court) return <p className="text-muted-foreground">{t('common.loading')}</p>;
 
   return (
     <div className="flex flex-col gap-6">
@@ -78,23 +80,25 @@ export function CourtDetailPage() {
         <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
           <Badge variant="secondary">{court.surface}</Badge>
           <span>{court.area}</span>
-          {court.indoor && <Badge variant="outline">Indoor</Badge>}
-          <span className="ml-auto font-medium text-foreground">{court.pricePerHour} ₴/h</span>
+          {court.indoor && <Badge variant="outline">{t('courts.indoor')}</Badge>}
+          <span className="ml-auto font-medium text-foreground">
+            {t('courts.pricePerHour', { price: court.pricePerHour })}
+          </span>
         </div>
         {court.description && <p className="mt-3 text-sm text-muted-foreground">{court.description}</p>}
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Book this court</CardTitle>
+          <CardTitle>{t('courtDetail.bookThisCourt')}</CardTitle>
         </CardHeader>
         <CardContent>
           {!session ? (
-            <Button onClick={() => navigate('/login')}>Sign in to book</Button>
+            <Button onClick={() => navigate('/login')}>{t('courtDetail.signInToBook')}</Button>
           ) : (
             <FieldGroup>
               <Field>
-                <FieldLabel htmlFor="date">Date</FieldLabel>
+                <FieldLabel htmlFor="date">{t('courtDetail.date')}</FieldLabel>
                 <Input
                   id="date"
                   type="date"
@@ -105,7 +109,7 @@ export function CourtDetailPage() {
               </Field>
 
               <Field>
-                <FieldLabel>Time</FieldLabel>
+                <FieldLabel>{t('courtDetail.time')}</FieldLabel>
                 <ToggleGroup
                   type="single"
                   variant="outline"
@@ -122,7 +126,7 @@ export function CourtDetailPage() {
               </Field>
 
               <Field>
-                <FieldLabel>Duration</FieldLabel>
+                <FieldLabel>{t('courtDetail.duration')}</FieldLabel>
                 <ToggleGroup
                   type="single"
                   variant="outline"
@@ -131,20 +135,20 @@ export function CourtDetailPage() {
                 >
                   {DURATIONS.map((d) => (
                     <ToggleGroupItem key={d} value={String(d)}>
-                      {d} min
+                      {t('courtDetail.durationMinutes', { minutes: d })}
                     </ToggleGroupItem>
                   ))}
                 </ToggleGroup>
               </Field>
 
               <Field orientation="horizontal">
-                <FieldLabel htmlFor="with-coach">Add a coach</FieldLabel>
+                <FieldLabel htmlFor="with-coach">{t('courtDetail.addCoach')}</FieldLabel>
                 <Switch id="with-coach" checked={withCoach} onCheckedChange={setWithCoach} />
               </Field>
 
               {withCoach && (
                 <Field>
-                  <FieldLabel>Coach</FieldLabel>
+                  <FieldLabel>{t('courtDetail.coach')}</FieldLabel>
                   <ToggleGroup
                     type="single"
                     variant="outline"
@@ -154,7 +158,7 @@ export function CourtDetailPage() {
                   >
                     {trainers?.map((trainer) => (
                       <ToggleGroupItem key={trainer.id} value={trainer.id}>
-                        {trainer.name} · {trainer.pricePerHour} ₴/h
+                        {t('courtDetail.coachPrice', { name: trainer.name, price: trainer.pricePerHour })}
                       </ToggleGroupItem>
                     ))}
                   </ToggleGroup>
@@ -174,7 +178,7 @@ export function CourtDetailPage() {
                   createBooking.mutate();
                 }}
               >
-                {createBooking.isPending ? 'Booking…' : 'Book now'}
+                {createBooking.isPending ? t('courtDetail.booking') : t('courtDetail.bookNow')}
               </Button>
             </FieldGroup>
           )}

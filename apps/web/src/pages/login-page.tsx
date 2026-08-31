@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
@@ -7,6 +8,7 @@ import { Input } from '../components/ui/input';
 import { signInWithGoogle, signInWithPassword, signUpWithPassword } from '../lib/auth-client';
 
 export function LoginPage() {
+  const { t } = useTranslation();
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -26,7 +28,7 @@ export function LoginPage() {
       }
       navigate('/courts');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong');
+      setError(err instanceof Error ? err.message : t('auth.errorGeneric'));
     } finally {
       setIsSubmitting(false);
     }
@@ -36,14 +38,14 @@ export function LoginPage() {
     <div className="mx-auto max-w-sm">
       <Card>
         <CardHeader>
-          <CardTitle>{mode === 'signin' ? 'Sign in' : 'Create an account'}</CardTitle>
-          <CardDescription>Book courts and coaches around town.</CardDescription>
+          <CardTitle>{mode === 'signin' ? t('auth.signIn') : t('auth.createAccount')}</CardTitle>
+          <CardDescription>{t('auth.tagline')}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit}>
             <FieldGroup>
               <Field data-invalid={!!error}>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
+                <FieldLabel htmlFor="email">{t('auth.email')}</FieldLabel>
                 <Input
                   id="email"
                   type="email"
@@ -54,7 +56,7 @@ export function LoginPage() {
                 />
               </Field>
               <Field data-invalid={!!error}>
-                <FieldLabel htmlFor="password">Password</FieldLabel>
+                <FieldLabel htmlFor="password">{t('auth.password')}</FieldLabel>
                 <Input
                   id="password"
                   type="password"
@@ -68,10 +70,10 @@ export function LoginPage() {
                 {error && <p className="text-sm text-destructive">{error}</p>}
               </Field>
               <Button type="submit" disabled={isSubmitting}>
-                {mode === 'signin' ? 'Sign in' : 'Sign up'}
+                {mode === 'signin' ? t('auth.signInButton') : t('auth.signUpButton')}
               </Button>
               <Button type="button" variant="outline" onClick={() => signInWithGoogle()}>
-                Continue with Google
+                {t('auth.continueWithGoogle')}
               </Button>
               <Button
                 type="button"
@@ -79,7 +81,7 @@ export function LoginPage() {
                 size="sm"
                 onClick={() => setMode(mode === 'signin' ? 'signup' : 'signin')}
               >
-                {mode === 'signin' ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
+                {mode === 'signin' ? t('auth.noAccount') : t('auth.hasAccount')}
               </Button>
             </FieldGroup>
           </form>

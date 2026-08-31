@@ -1,0 +1,65 @@
+{
+  "common": {
+    "appName": "Tennis App",
+    "loading": "Завантаження…"
+  },
+  "layout": {
+    "courts": "Корти",
+    "myBookings": "Мої бронювання",
+    "profile": "Профіль",
+    "signIn": "Увійти",
+    "signOut": "Вийти"
+  },
+  "auth": {
+    "signIn": "Увійти",
+    "createAccount": "Створити акаунт",
+    "tagline": "Бронюйте корти та тренерів у місті.",
+    "email": "Email",
+    "password": "Пароль",
+    "signInButton": "Увійти",
+    "signUpButton": "Зареєструватися",
+    "continueWithGoogle": "Продовжити з Google",
+    "noAccount": "Немає акаунту? Зареєструватися",
+    "hasAccount": "Вже є акаунт? Увійти",
+    "errorGeneric": "Щось пішло не так"
+  },
+  "courts": {
+    "title": "Корти",
+    "loading": "Завантаження кортів…",
+    "indoor": "Критий",
+    "pricePerHour": "{{price}} ₴/год"
+  },
+  "courtDetail": {
+    "bookThisCourt": "Забронювати цей корт",
+    "signInToBook": "Увійдіть, щоб забронювати",
+    "date": "Дата",
+    "time": "Час",
+    "duration": "Тривалість",
+    "durationMinutes": "{{minutes}} хв",
+    "addCoach": "Додати тренера",
+    "coach": "Тренер",
+    "coachPrice": "{{name}} · {{price}} ₴/год",
+    "bookNow": "Забронювати",
+    "booking": "Бронювання…",
+    "errorGeneric": "Не вдалося створити бронювання"
+  },
+  "bookings": {
+    "title": "Мої бронювання",
+    "empty": "Поки немає бронювань — забронюйте корт.",
+    "withCoach": "з {{name}}",
+    "cancel": "Скасувати",
+    "status": {
+      "CONFIRMED": "Підтверджено",
+      "CANCELLED": "Скасовано"
+    }
+  },
+  "profile": {
+    "title": "Профіль",
+    "email": "Email",
+    "displayName": "Ім'я",
+    "ntrpLevel": "Рівень NTRP",
+    "save": "Зберегти",
+    "saving": "Збереження…",
+    "saved": "Збережено"
+  }
+}

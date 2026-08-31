@@ -1,0 +1,65 @@
+{
+  "common": {
+    "appName": "Tennis App",
+    "loading": "Loading…"
+  },
+  "layout": {
+    "courts": "Courts",
+    "myBookings": "My bookings",
+    "profile": "Profile",
+    "signIn": "Sign in",
+    "signOut": "Sign out"
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "createAccount": "Create an account",
+    "tagline": "Book courts and coaches around town.",
+    "email": "Email",
+    "password": "Password",
+    "signInButton": "Sign in",
+    "signUpButton": "Sign up",
+    "continueWithGoogle": "Continue with Google",
+    "noAccount": "Don't have an account? Sign up",
+    "hasAccount": "Already have an account? Sign in",
+    "errorGeneric": "Something went wrong"
+  },
+  "courts": {
+    "title": "Courts",
+    "loading": "Loading courts…",
+    "indoor": "Indoor",
+    "pricePerHour": "{{price}} ₴/h"
+  },
+  "courtDetail": {
+    "bookThisCourt": "Book this court",
+    "signInToBook": "Sign in to book",
+    "date": "Date",
+    "time": "Time",
+    "duration": "Duration",
+    "durationMinutes": "{{minutes}} min",
+    "addCoach": "Add a coach",
+    "coach": "Coach",
+    "coachPrice": "{{name}} · {{price}} ₴/h",
+    "bookNow": "Book now",
+    "booking": "Booking…",
+    "errorGeneric": "Could not create the booking"
+  },
+  "bookings": {
+    "title": "My bookings",
+    "empty": "No bookings yet — go book a court.",
+    "withCoach": "with {{name}}",
+    "cancel": "Cancel",
+    "status": {
+      "CONFIRMED": "Confirmed",
+      "CANCELLED": "Cancelled"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "email": "Email",
+    "displayName": "Display name",
+    "ntrpLevel": "NTRP level",
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Saved"
+  }
+}
