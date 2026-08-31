@@ -6,6 +6,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from '../auth/auth.module';
 import { PrismaModule } from '../prisma/prisma.module';
+import { CourtsModule } from '../courts/courts.module';
+import { TrainersModule } from '../trainers/trainers.module';
+import { BookingsModule } from '../bookings/bookings.module';
 import { validateEnv } from '../config/env';
 
 @Module({
@@ -16,6 +19,9 @@ import { validateEnv } from '../config/env';
     }),
     PrismaModule,
     AuthModule,
+    CourtsModule,
+    TrainersModule,
+    BookingsModule,
   ],
   controllers: [AppController],
   providers: [
