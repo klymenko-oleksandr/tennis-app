@@ -25,7 +25,10 @@ export class UserSyncService {
     });
   }
 
-  updateProfile(userId: string, data: { displayName?: string | null; ntrpLevel?: number | null }) {
+  updateProfile(
+    userId: string,
+    data: { displayName?: string | null; ntrpLevel?: number | null; lookingToPlayNote?: string | null },
+  ) {
     return this.prisma.user.update({ where: { id: userId }, data });
   }
 }

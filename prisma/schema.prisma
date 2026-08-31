@@ -36,13 +36,17 @@ enum PaymentStatus {
 // owns credentials and the OAuth handshake; this table holds our own profile
 // data and is upserted lazily on first authenticated request (see DR.md §4).
 model User {
-  id          String   @id @db.Uuid
-  email       String   @unique
-  displayName String?
-  avatarUrl   String?
-  ntrpLevel   Float?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                String   @id @db.Uuid
+  email             String   @unique
+  displayName       String?
+  avatarUrl         String?
+  ntrpLevel         Float?
+  // Non-null = "looking to play" (DR.md §10 M4). A free-text note rather
+  // than a schedule — no availability-matching system, just a signal +
+  // context, set via PATCH /auth/me alongside the rest of the profile.
+  lookingToPlayNote String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   bookings        Booking[]
   sentMatches     PartnerMatch[] @relation("PartnerMatchFrom")
@@ -125,12 +129,14 @@ model Booking {
   trainer Trainer? @relation(fields: [trainerId], references: [id], onDelete: Restrict)
   payment Payment?
 
+  partnerMatches PartnerMatch[]
+
   @@unique([courtId, date, startTime])
   @@map("bookings")
 }
 
-// Post-MVP (DR.md §5, §10 M4) — modeled now for the full-schema showcase,
-// unused until partner matching ships.
+// DR.md §10 M4 — an invite from one user to another to play, optionally
+// tied to a booking the sender already made.
 model PartnerMatch {
   id         String             @id @default(uuid()) @db.Uuid
   fromUserId String             @db.Uuid
@@ -138,9 +144,11 @@ model PartnerMatch {
   bookingId  String?            @db.Uuid
   status     PartnerMatchStatus @default(PENDING)
   createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
 
-  fromUser User @relation("PartnerMatchFrom", fields: [fromUserId], references: [id], onDelete: Cascade)
-  toUser   User @relation("PartnerMatchTo", fields: [toUserId], references: [id], onDelete: Cascade)
+  fromUser User     @relation("PartnerMatchFrom", fields: [fromUserId], references: [id], onDelete: Cascade)
+  toUser   User     @relation("PartnerMatchTo", fields: [toUserId], references: [id], onDelete: Cascade)
+  booking  Booking? @relation(fields: [bookingId], references: [id], onDelete: SetNull)
 
   @@map("partner_matches")
 }
