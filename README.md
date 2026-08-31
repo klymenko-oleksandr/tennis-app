@@ -1,6 +1,8 @@
 # Baseline — Tennis Court Booking & Partner-Finding App
 
-Nx monorepo: NestJS API (`apps/api`) + React/Vite frontend (`apps/web`), Prisma/Postgres, self-hosted Supabase Auth (GoTrue). See [DR.md](./DR.md) for the full design review.
+[![CI](https://github.com/klymenko-oleksandr/tennis-app/actions/workflows/ci.yml/badge.svg)](https://github.com/klymenko-oleksandr/tennis-app/actions/workflows/ci.yml)
+
+Nx monorepo: NestJS API (`apps/api`) + React/Vite frontend (`apps/web`), Prisma/Postgres, self-hosted Supabase Auth (GoTrue). UA/EN i18n. See [DR.md](./DR.md) for the full design review.
 
 ## Quick start
 
