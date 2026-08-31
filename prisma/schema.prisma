@@ -1,0 +1,163 @@
+// See DR.md §5 for the rationale behind this schema.
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../apps/api/src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Surface {
+  CLAY
+  HARD
+  GRASS
+  CARPET
+}
+
+enum BookingStatus {
+  CONFIRMED
+  CANCELLED
+}
+
+enum PartnerMatchStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  REFUNDED
+}
+
+// id matches the `sub` claim of GoTrue-issued JWTs (auth.users.id) — GoTrue
+// owns credentials and the OAuth handshake; this table holds our own profile
+// data and is upserted lazily on first authenticated request (see DR.md §4).
+model User {
+  id          String   @id @db.Uuid
+  email       String   @unique
+  displayName String?
+  avatarUrl   String?
+  ntrpLevel   Float?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  bookings        Booking[]
+  sentMatches     PartnerMatch[] @relation("PartnerMatchFrom")
+  receivedMatches PartnerMatch[] @relation("PartnerMatchTo")
+
+  @@map("users")
+}
+
+model Court {
+  id            String   @id @default(uuid()) @db.Uuid
+  name          String
+  area          String
+  address       String?
+  surface       Surface
+  indoor        Boolean  @default(false)
+  pricePerHour  Int
+  description   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  availabilities Availability[]
+  bookings       Booking[]
+
+  @@map("courts")
+}
+
+model Trainer {
+  id           String   @id @default(uuid()) @db.Uuid
+  name         String
+  credential   String?
+  bio          String?
+  pricePerHour Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  availabilities Availability[]
+  bookings       Booking[]
+
+  @@map("trainers")
+}
+
+// Recurring weekly operating hours for a court or trainer. Bookable slots
+// are derived at query time from Availability minus existing Bookings —
+// this table is not one row per slot.
+model Availability {
+  id        String  @id @default(uuid()) @db.Uuid
+  courtId   String? @db.Uuid
+  trainerId String? @db.Uuid
+  dayOfWeek Int // 0 (Sunday) - 6 (Saturday)
+  startTime String // "HH:MM", 24h
+  endTime   String // "HH:MM", 24h
+
+  court   Court?   @relation(fields: [courtId], references: [id], onDelete: Cascade)
+  trainer Trainer? @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+
+  @@map("availabilities")
+}
+
+// Conflict prevention: courtId+date+startTime is a normal unique constraint.
+// The trainerId+date+startTime constraint additionally needs `WHERE trainer_id
+// IS NOT NULL` (a booking may have no trainer) — Prisma's schema DSL doesn't
+// support partial unique indexes, so that one is added via a follow-up raw
+// SQL migration after `prisma migrate dev` generates this table. See DR.md §5.
+model Booking {
+  id              String        @id @default(uuid()) @db.Uuid
+  userId          String        @db.Uuid
+  courtId         String        @db.Uuid
+  trainerId       String?       @db.Uuid
+  date            DateTime      @db.Date
+  startTime       String // "HH:MM", 24h
+  durationMinutes Int
+  players         Int           @default(2)
+  notes           String?
+  status          BookingStatus @default(CONFIRMED)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  court   Court    @relation(fields: [courtId], references: [id], onDelete: Restrict)
+  trainer Trainer? @relation(fields: [trainerId], references: [id], onDelete: Restrict)
+  payment Payment?
+
+  @@unique([courtId, date, startTime])
+  @@map("bookings")
+}
+
+// Post-MVP (DR.md §5, §10 M4) — modeled now for the full-schema showcase,
+// unused until partner matching ships.
+model PartnerMatch {
+  id         String             @id @default(uuid()) @db.Uuid
+  fromUserId String             @db.Uuid
+  toUserId   String             @db.Uuid
+  bookingId  String?            @db.Uuid
+  status     PartnerMatchStatus @default(PENDING)
+  createdAt  DateTime           @default(now())
+
+  fromUser User @relation("PartnerMatchFrom", fields: [fromUserId], references: [id], onDelete: Cascade)
+  toUser   User @relation("PartnerMatchTo", fields: [toUserId], references: [id], onDelete: Cascade)
+
+  @@map("partner_matches")
+}
+
+// Post-MVP (DR.md §5, §10 M5) — modeled now for the full-schema showcase,
+// unused until in-app payment processing ships.
+model Payment {
+  id        String        @id @default(uuid()) @db.Uuid
+  bookingId String        @unique @db.Uuid
+  amount    Int
+  currency  String        @default("UAH")
+  status    PaymentStatus @default(PENDING)
+  provider  String?
+  createdAt DateTime      @default(now())
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}

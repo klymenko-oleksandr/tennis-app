@@ -1,0 +1,59 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-tennis}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tennis}
+      POSTGRES_DB: ${POSTGRES_DB:-tennis}
+    ports:
+      - '${POSTGRES_PORT:-5432}:5432'
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./docker/postgres-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-tennis}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  auth:
+    image: supabase/gotrue:v2.174.0
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - '${GOTRUE_PORT:-9999}:9999'
+    environment:
+      GOTRUE_API_HOST: 0.0.0.0
+      PORT: 9999
+      API_EXTERNAL_URL: ${GOTRUE_URL:-http://localhost:9999}
+
+      GOTRUE_DB_DRIVER: postgres
+      GOTRUE_DB_DATABASE_URL: postgres://${POSTGRES_USER:-tennis}:${POSTGRES_PASSWORD:-tennis}@db:5432/${POSTGRES_DB:-tennis}?search_path=auth
+
+      GOTRUE_SITE_URL: ${SITE_URL:-http://localhost:4200}
+      GOTRUE_URI_ALLOW_LIST: ${SITE_URL:-http://localhost:4200}/**
+
+      GOTRUE_JWT_SECRET: ${GOTRUE_JWT_SECRET:?GOTRUE_JWT_SECRET must be set in .env}
+      GOTRUE_JWT_EXP: 3600
+      GOTRUE_JWT_AUD: authenticated
+
+      GOTRUE_DISABLE_SIGNUP: 'false'
+      GOTRUE_EXTERNAL_EMAIL_ENABLED: 'true'
+      # DR.md §9: brute-force mitigation on auth endpoints. GoTrue handles
+      # login/signup directly (the frontend talks to it, not through NestJS),
+      # so this — not @nestjs/throttler — is what rate-limits those attempts.
+      GOTRUE_RATE_LIMIT_SIGN_IN_SIGN_UPS: '10' # per 5 minutes, per IP
+      # No SMTP configured yet — MVP defers this decision (see DR.md §4).
+      # New email/password accounts activate immediately without a confirmation email.
+      GOTRUE_MAILER_AUTOCONFIRM: 'true'
+
+      GOTRUE_EXTERNAL_GOOGLE_ENABLED: 'true'
+      GOTRUE_EXTERNAL_GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOTRUE_EXTERNAL_GOOGLE_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      GOTRUE_EXTERNAL_GOOGLE_REDIRECT_URI: ${GOTRUE_URL:-http://localhost:9999}/callback
+
+volumes:
+  db-data:
