@@ -11,6 +11,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
+  // Same SITE_URL the auth container is configured with (docker-compose.yml).
+  app.enableCors({ origin: process.env.SITE_URL || 'http://localhost:4200' });
   const port = process.env.PORT || 3000;
   await app.listen(port);
   Logger.log(
