@@ -9,6 +9,7 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { CourtsModule } from '../courts/courts.module';
 import { TrainersModule } from '../trainers/trainers.module';
 import { BookingsModule } from '../bookings/bookings.module';
+import { PartnersModule } from '../partners/partners.module';
 import { validateEnv } from '../config/env';
 
 @Module({
@@ -22,6 +23,7 @@ import { validateEnv } from '../config/env';
     CourtsModule,
     TrainersModule,
     BookingsModule,
+    PartnersModule,
   ],
   controllers: [AppController],
   providers: [
