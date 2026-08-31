@@ -10,13 +10,12 @@ export class UserSyncService {
   constructor(private readonly prisma: PrismaService) {}
 
   async syncFromJwt(payload: GoTrueJwtPayload) {
+    // displayName/avatarUrl are only seeded from the provider (e.g. Google)
+    // on first sign-in — later syncs must not clobber a user's own edits
+    // made via updateProfile.
     return this.prisma.user.upsert({
       where: { id: payload.sub },
-      update: {
-        email: payload.email,
-        displayName: payload.user_metadata?.full_name,
-        avatarUrl: payload.user_metadata?.avatar_url,
-      },
+      update: { email: payload.email },
       create: {
         id: payload.sub,
         email: payload.email,
@@ -24,5 +23,9 @@ export class UserSyncService {
         avatarUrl: payload.user_metadata?.avatar_url,
       },
     });
+  }
+
+  updateProfile(userId: string, data: { displayName?: string | null; ntrpLevel?: number | null }) {
+    return this.prisma.user.update({ where: { id: userId }, data });
   }
 }
