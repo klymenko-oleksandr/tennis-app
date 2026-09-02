@@ -35,9 +35,23 @@ enum PaymentStatus {
 // App-level authorization role — distinct from GoTrue's own JWT `role`
 // claim (always "authenticated", Supabase's auth-level concept, not ours).
 // See GoTrueJwtPayload in apps/api/src/auth/jwt-payload.interface.ts.
+// Left as-is (USER | ADMIN) for now — the multi-tenancy plan
+// (docs/multi-tenancy-plan.md) calls for narrowing this to a
+// platform-level USER | SUPERADMIN flag once ClubMembership (below)
+// takes over club-scoped admin rights, but that rename touches every
+// existing @Roles('ADMIN') call site and belongs in that follow-up PR,
+// not this purely-additive schema change.
 enum Role {
   USER
   ADMIN
+}
+
+// Per-club staff role (docs/multi-tenancy-plan.md). Deliberately separate
+// from the platform-level `Role` above — a ClubMembership grants rights
+// within one specific club, not the whole platform.
+enum ClubRole {
+  ADMIN
+  STAFF
 }
 
 // id matches the `sub` claim of GoTrue-issued JWTs (auth.users.id) — GoTrue
@@ -62,24 +76,62 @@ model User {
   updatedAt         DateTime @updatedAt
 
   bookings        Booking[]
-  sentMatches     PartnerMatch[] @relation("PartnerMatchFrom")
-  receivedMatches PartnerMatch[] @relation("PartnerMatchTo")
+  sentMatches     PartnerMatch[]   @relation("PartnerMatchFrom")
+  receivedMatches PartnerMatch[]   @relation("PartnerMatchTo")
+  clubMemberships ClubMembership[]
 
   @@map("users")
 }
 
-model Court {
-  id            String   @id @default(uuid()) @db.Uuid
-  name          String
-  area          String
-  address       String?
-  surface       Surface
-  indoor        Boolean  @default(false)
-  pricePerHour  Int
-  description   String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+// Tenant root (docs/multi-tenancy-plan.md). Court/Trainer/Booking below
+// carry a nullable `clubId` for now — purely additive, backfilled onto
+// existing rows by the follow-up migration, but not yet enforced NOT NULL.
+// Enforcement + the guard/service-layer rework that depends on it is a
+// separate, larger follow-up tracked on #18.
+model Club {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  slug      String   @unique
+  timezone  String   @default("Europe/Kyiv")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
+  courts   Court[]
+  trainers Trainer[]
+  bookings Booking[]
+  staff    ClubMembership[]
+
+  @@map("clubs")
+}
+
+// Which users have admin/staff rights at which club. Distinct from the
+// platform-level `User.role` — see the `Role` enum comment above.
+model ClubMembership {
+  userId String   @db.Uuid
+  clubId String   @db.Uuid
+  role   ClubRole
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  club Club @relation(fields: [clubId], references: [id], onDelete: Cascade)
+
+  @@id([userId, clubId])
+  @@map("club_memberships")
+}
+
+model Court {
+  id           String   @id @default(uuid()) @db.Uuid
+  clubId       String?  @db.Uuid
+  name         String
+  area         String
+  address      String?
+  surface      Surface
+  indoor       Boolean  @default(false)
+  pricePerHour Int
+  description  String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  club           Club?          @relation(fields: [clubId], references: [id], onDelete: Restrict)
   availabilities Availability[]
   bookings       Booking[]
   trainers       TrainerCourt[]
@@ -89,6 +141,7 @@ model Court {
 
 model Trainer {
   id           String   @id @default(uuid()) @db.Uuid
+  clubId       String?  @db.Uuid
   name         String
   credential   String?
   bio          String?
@@ -96,6 +149,7 @@ model Trainer {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
+  club           Club?          @relation(fields: [clubId], references: [id], onDelete: Restrict)
   availabilities Availability[]
   bookings       Booking[]
   courts         TrainerCourt[]
@@ -143,6 +197,11 @@ model Booking {
   userId          String        @db.Uuid
   courtId         String        @db.Uuid
   trainerId       String?       @db.Uuid
+  // Denormalized from `court.clubId` (docs/multi-tenancy-plan.md) so admin
+  // stats/pricing queries (#13) can filter by club directly instead of
+  // joining through Court on every aggregate. Nullable for the same reason
+  // as Court/Trainer.clubId above — backfilled, not yet enforced.
+  clubId          String?       @db.Uuid
   date            DateTime      @db.Date
   startTime       String // "HH:MM", 24h
   durationMinutes Int
@@ -155,6 +214,7 @@ model Booking {
   user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   court   Court    @relation(fields: [courtId], references: [id], onDelete: Restrict)
   trainer Trainer? @relation(fields: [trainerId], references: [id], onDelete: Restrict)
+  club    Club?    @relation(fields: [clubId], references: [id], onDelete: Restrict)
   payment Payment?
 
   partnerMatches PartnerMatch[]

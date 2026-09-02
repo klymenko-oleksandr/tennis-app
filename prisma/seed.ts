@@ -100,17 +100,28 @@ async function main() {
   await prisma.court.deleteMany();
   await prisma.trainer.deleteMany();
 
+  // Seeded courts/trainers all belong to one club for now — multi-tenancy
+  // (docs/multi-tenancy-plan.md) hasn't shipped Club CRUD yet, so this is
+  // the same "Default Club" the migration backfill creates for pre-existing
+  // data. Upsert rather than create so re-seeding doesn't pile up
+  // duplicates.
+  const defaultClub = await prisma.club.upsert({
+    where: { slug: 'default-club' },
+    update: {},
+    create: { name: 'Default Club', slug: 'default-club' },
+  });
+
   const courtsByName = new Map<string, string>();
   for (const court of courts) {
     const created = await prisma.court.create({
-      data: { ...court, availabilities: { create: weeklyHours() } },
+      data: { ...court, clubId: defaultClub.id, availabilities: { create: weeklyHours() } },
     });
     courtsByName.set(court.name, created.id);
   }
 
   for (const trainer of trainers) {
     const created = await prisma.trainer.create({
-      data: { ...trainer, availabilities: { create: weeklyHours() } },
+      data: { ...trainer, clubId: defaultClub.id, availabilities: { create: weeklyHours() } },
     });
 
     const courtNames = trainerCourtAssignments[trainer.name] ?? [];
