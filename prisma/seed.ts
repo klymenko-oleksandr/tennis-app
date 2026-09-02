@@ -84,22 +84,43 @@ function weeklyHours() {
   }));
 }
 
+// Which courts each seeded trainer actually works at — some coaches work
+// 2-3 courts, matched loosely to their specialty (clay specialist → clay
+// courts, etc.) rather than assigned at random.
+const trainerCourtAssignments: Record<string, string[]> = {
+  'Oleksiy Kovalenko': ['Pechersk Tennis Club', 'Borschagivka Tennis Park'],
+  'Iryna Savchenko': ['Obolon Sport Complex', 'Shevchenkivskyi Indoor'],
+  'Dmytro Bondar': ['Shevchenkivskyi Indoor', 'Podil Lawn Courts', 'Obolon Sport Complex'],
+};
+
 async function main() {
+  await prisma.trainerCourt.deleteMany();
   await prisma.availability.deleteMany();
   await prisma.booking.deleteMany();
   await prisma.court.deleteMany();
   await prisma.trainer.deleteMany();
 
+  const courtsByName = new Map<string, string>();
   for (const court of courts) {
-    await prisma.court.create({
+    const created = await prisma.court.create({
       data: { ...court, availabilities: { create: weeklyHours() } },
     });
+    courtsByName.set(court.name, created.id);
   }
 
   for (const trainer of trainers) {
-    await prisma.trainer.create({
+    const created = await prisma.trainer.create({
       data: { ...trainer, availabilities: { create: weeklyHours() } },
     });
+
+    const courtNames = trainerCourtAssignments[trainer.name] ?? [];
+    for (const courtName of courtNames) {
+      const courtId = courtsByName.get(courtName);
+      if (!courtId) continue;
+      await prisma.trainerCourt.create({
+        data: { trainerId: created.id, courtId },
+      });
+    }
   }
 
   console.log(`Seeded ${courts.length} courts and ${trainers.length} trainers.`);

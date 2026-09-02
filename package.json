@@ -12,7 +12,8 @@
     "docker:down": "docker compose down",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
-    "prisma:seed": "tsx prisma/seed.ts"
+    "prisma:seed": "tsx prisma/seed.ts",
+    "admin:promote": "tsx prisma/promote-admin.ts"
   },
   "private": true,
   "dependencies": {

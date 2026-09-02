@@ -63,6 +63,38 @@ export class BookingsService {
     }
   }
 
+  // DR.md backlog #12. Scoped down from the ticket's original "status
+  // override" framing: BookingStatus only has CONFIRMED/CANCELLED today —
+  // there's no check-in kiosk or approval flow behind Checked-in/No-show/
+  // Pending (seen in the Admin.dc.html mockup), so adding those states
+  // would be inventing a product flow, not implementing one. This is
+  // deliberately just list+filter and cancel-any-booking; extending
+  // BookingStatus is a separate decision for whoever needs it next.
+  findAllAdmin(filters: { date?: string; courtId?: string; status?: 'CONFIRMED' | 'CANCELLED' }) {
+    return this.prisma.booking.findMany({
+      where: {
+        ...(filters.date && { date: new Date(`${filters.date}T00:00:00Z`) }),
+        ...(filters.courtId && { courtId: filters.courtId }),
+        ...(filters.status && { status: filters.status }),
+      },
+      include: { court: true, trainer: true, user: true },
+      orderBy: [{ date: 'asc' }, { startTime: 'asc' }],
+    });
+  }
+
+  // Same effect as `cancel`, minus the ownership check — an admin can
+  // cancel any booking, not just their own.
+  async cancelAsAdmin(bookingId: string) {
+    const booking = await this.prisma.booking.findUnique({ where: { id: bookingId } });
+    if (!booking) {
+      throw new NotFoundException('Booking not found');
+    }
+    return this.prisma.booking.update({
+      where: { id: bookingId },
+      data: { status: 'CANCELLED' },
+    });
+  }
+
   findMine(userId: string) {
     return this.prisma.booking.findMany({
       where: { userId },

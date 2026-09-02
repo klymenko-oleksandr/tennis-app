@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
 import { AuthGuard } from './auth.guard';
+import { RolesGuard } from './roles.guard';
 import { UserSyncService } from './user-sync.service';
 import { Env } from '../config/env';
 
@@ -21,7 +22,7 @@ const jwtModule = JwtModule.registerAsync({
 @Module({
   imports: [jwtModule],
   controllers: [AuthController],
-  providers: [AuthGuard, UserSyncService],
-  exports: [AuthGuard, jwtModule],
+  providers: [AuthGuard, RolesGuard, UserSyncService],
+  exports: [AuthGuard, RolesGuard, jwtModule],
 })
 export class AuthModule {}
