@@ -52,6 +52,7 @@
   - This ensures a taken court fails a booking attempt regardless of which trainer is requested, and vice versa — avoiding the false negative a single compound constraint would produce.
   - Both constraints are checked atomically within one transaction; a violation rolls back the whole booking and can be mapped to a specific, user-facing error ("court unavailable" vs. "trainer unavailable") based on which constraint fired.
   - Considered and explicitly rejected for current scale: distributed locking via Redis (system-design-interview-popular, but overkill for this user count) — documented here as a considered alternative.
+- **Multi-tenancy (multiple clubs, each with its own admins/rules):** not yet implemented — `Court`/`Trainer` are still global and `User.role` is a single flat flag. Concrete migration plan (schema, guard rework, sequencing against §13's pricing rules) lives in [`docs/multi-tenancy-plan.md`](docs/multi-tenancy-plan.md), following this document's own convention of moving section-specific detail into separate referenced docs as it's written.
 
 ## 6. Performance
 
