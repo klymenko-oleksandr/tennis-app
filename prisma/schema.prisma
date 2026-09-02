@@ -32,6 +32,14 @@ enum PaymentStatus {
   REFUNDED
 }
 
+// App-level authorization role — distinct from GoTrue's own JWT `role`
+// claim (always "authenticated", Supabase's auth-level concept, not ours).
+// See GoTrueJwtPayload in apps/api/src/auth/jwt-payload.interface.ts.
+enum Role {
+  USER
+  ADMIN
+}
+
 // id matches the `sub` claim of GoTrue-issued JWTs (auth.users.id) — GoTrue
 // owns credentials and the OAuth handshake; this table holds our own profile
 // data and is upserted lazily on first authenticated request (see DR.md §4).
@@ -45,6 +53,11 @@ model User {
   // than a schedule — no availability-matching system, just a signal +
   // context, set via PATCH /auth/me alongside the rest of the profile.
   lookingToPlayNote String?
+  // Admin-managed only — never set from the JWT (UserSyncService's upsert
+  // deliberately excludes it from the `update` clause so a sign-in can't
+  // reset it). No self-serve admin signup; promote via
+  // `npm run admin:promote -- <email>`.
+  role              Role     @default(USER)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
@@ -69,6 +82,7 @@ model Court {
 
   availabilities Availability[]
   bookings       Booking[]
+  trainers       TrainerCourt[]
 
   @@map("courts")
 }
@@ -84,8 +98,22 @@ model Trainer {
 
   availabilities Availability[]
   bookings       Booking[]
+  courts         TrainerCourt[]
 
   @@map("trainers")
+}
+
+// Which courts a trainer actually works at — some coaches work 2-3 courts.
+// Plain many-to-many, no extra fields needed yet.
+model TrainerCourt {
+  trainerId String @db.Uuid
+  courtId   String @db.Uuid
+
+  trainer Trainer @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+  court   Court   @relation(fields: [courtId], references: [id], onDelete: Cascade)
+
+  @@id([trainerId, courtId])
+  @@map("trainer_courts")
 }
 
 // Recurring weekly operating hours for a court or trainer. Bookable slots
