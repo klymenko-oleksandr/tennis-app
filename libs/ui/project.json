@@ -1,0 +1,16 @@
+{
+  "name": "ui",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/ui/src",
+  "projectType": "library",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project ui --web",
+  "targets": {
+    "storybook": {
+      "options": {
+        "cwd": "libs/ui",
+        "command": "storybook dev --port 6006 --exact-port"
+      }
+    }
+  }
+}
