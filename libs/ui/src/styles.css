@@ -1,0 +1,283 @@
+/* Baseline design system — single source of truth for tokens + Tailwind bootstrap.
+   apps/web imports this file directly; Storybook (which has no host app around it)
+   depends on it being fully self-contained. */
+
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+
+/* Self-hosted per Baseline guidelines — Space Mono in particular is load-bearing
+   (every kicker/label uses it) and must not depend on a CDN. */
+@import '@fontsource-variable/schibsted-grotesk/wght.css';
+@import '@fontsource/space-mono/400.css';
+@import '@fontsource/space-mono/700.css';
+
+@custom-variant dark (&:is(.dark *));
+
+/* ── Semantic tokens (shadcn contract) ──────────────────────────────────
+   Raw values live here so `.dark` can override them; @theme inline below
+   just points Tailwind's utility system at these same runtime variables. */
+:root {
+  --radius: 0.875rem; /* 14px — shadcn derives sm/md/lg/xl from this */
+
+  --background: #f8f8f5;
+  --foreground: #1c1b17;
+
+  --card: #ffffff;
+  --card-foreground: #1c1b17;
+
+  --popover: #ffffff;
+  --popover-foreground: #1c1b17;
+
+  --primary: #1f8a5b;
+  --primary-foreground: #ffffff;
+
+  --secondary: #edede8;
+  --secondary-foreground: #1c1b17;
+
+  --muted: #edede8;
+  --muted-foreground: #9a958a;
+
+  --accent: #f0f8f4;
+  --accent-foreground: #0d5c3a;
+
+  --destructive: #c0392b;
+  --destructive-foreground: #ffffff;
+
+  --border: #e6e6e1;
+  --input: #e6e6e1;
+  --ring: #1f8a5b;
+
+  --chart-1: #1f8a5b;
+  --chart-2: #c87941;
+  --chart-3: #4a7fb5;
+  --chart-4: #4a8a4a;
+  --chart-5: #7a5a8a;
+
+  --sidebar: #1c1b17;
+  --sidebar-foreground: #8a867c;
+  --sidebar-primary: #1f8a5b;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f8f8f5;
+  --sidebar-accent-foreground: #1c1b17;
+  --sidebar-border: #302f28;
+  --sidebar-ring: #1f8a5b;
+}
+
+/* Derived arithmetically from the light theme's neutrals — not yet designed
+   against. Baseline's dark surfaces (#1C1B17 sidebars, hero cards) today are
+   accents inside a light theme, not a real dark mode. */
+.dark {
+  --background: #14140f;
+  --foreground: #f8f8f5;
+
+  --card: #1c1b17;
+  --card-foreground: #f8f8f5;
+
+  --popover: #1c1b17;
+  --popover-foreground: #f8f8f5;
+
+  --primary: #2fa96f;
+  --primary-foreground: #0a1f14;
+
+  --secondary: #252520;
+  --secondary-foreground: #f8f8f5;
+
+  --muted: #252520;
+  --muted-foreground: #8a867c;
+
+  --accent: #1b2a21;
+  --accent-foreground: #9bc4ae;
+
+  --destructive: #d9584a;
+  --destructive-foreground: #14140f;
+
+  --border: #302f28;
+  --input: #302f28;
+  --ring: #2fa96f;
+
+  --chart-1: #2fa96f;
+  --chart-2: #d98f55;
+  --chart-3: #5e93c7;
+  --chart-4: #5e9e5e;
+  --chart-5: #8e6d9e;
+
+  --sidebar: #1c1b17;
+  --sidebar-foreground: #8a867c;
+  --sidebar-primary: #2fa96f;
+  --sidebar-primary-foreground: #0a1f14;
+  --sidebar-accent: #252520;
+  --sidebar-accent-foreground: #f8f8f5;
+  --sidebar-border: #302f28;
+  --sidebar-ring: #2fa96f;
+}
+
+@theme inline {
+  /* Fonts */
+  --font-sans: 'Schibsted Grotesk Variable', 'Schibsted Grotesk', system-ui, sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, monospace;
+
+  /* shadcn semantic bridge */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Baseline additions with no shadcn slot */
+  --color-court-clay: #c87941;
+  --color-court-hard: #4a7fb5;
+  --color-court-grass: #4a8a4a;
+  --color-court-carpet: #7a5a8a;
+
+  --color-win: #1f8a5b;
+  --color-win-bg: #e7f0e9;
+  --color-loss: #b0492e;
+  --color-loss-bg: #f4e6e2;
+  --color-warning: #d97757;
+
+  /* Numbered brand/neutral scale (tokens/colors.css) — same in light & dark,
+     used directly by component overrides (e.g. border-brand-200, text-neutral-700). */
+  --color-brand-50: #f0f8f4;
+  --color-brand-100: #e3f1e9;
+  --color-brand-200: #bde3cf;
+  --color-brand-300: #9bc4ae;
+  --color-brand-400: #5a8a71;
+  --color-brand-500: #1f8a5b;
+  --color-brand-700: #0d5c3a;
+
+  --color-neutral-25: #f8f8f5;
+  --color-neutral-50: #edede8;
+  --color-neutral-75: #e3e3dd;
+  --color-neutral-100: #dcdcd5;
+  --color-neutral-150: #d5d5ce;
+  --color-neutral-200: #c9c9c2;
+  --color-neutral-300: #adaea8;
+  --color-neutral-400: #a39e92;
+  --color-neutral-500: #9a958a;
+  --color-neutral-700: #6e6a60;
+  --color-neutral-800: #57534b;
+  --color-neutral-900: #3c3a33;
+  --color-neutral-950: #1c1b17;
+
+  /* Radius — shadcn's standard derivation for controls (10/12/14/18 off a
+     14px base), Baseline's explicit values for card/hero-level radii which
+     don't derive cleanly from one base. */
+  --radius-xs: 8px;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: 20px;
+  --radius-3xl: 22px;
+  --radius-4xl: 24px;
+
+  /* Baseline type scale (tokens/typography.css) */
+  --text-9: 9px;
+  --text-10: 10px;
+  --text-11: 11px;
+  --text-12: 12px;
+  --text-13: 13px;
+  --text-14: 14px;
+  --text-15: 15px;
+  --text-16: 16px;
+  --text-17: 17px;
+  --text-19: 19px;
+  --text-23: 23px;
+  --text-27: 27px;
+  --text-33: 33px;
+
+  --text-caption: var(--text-11);
+  --text-label: var(--text-12);
+  --text-body-sm: var(--text-13);
+  --text-body: var(--text-15);
+  --text-body-lg: var(--text-16);
+  --text-title-sm: var(--text-17);
+  --text-title: var(--text-19);
+  --text-title-lg: var(--text-23);
+  --text-display-sm: var(--text-27);
+  --text-display: var(--text-33);
+
+  --tracking-mono-tight: 0.1em;
+  --tracking-mono: 0.14em;
+  --tracking-mono-wide: 0.18em;
+  --tracking-mono-wider: 0.22em;
+
+  --leading-tight: 1.08;
+  --leading-snug: 1.2;
+  --leading-normal: 1.5;
+
+  /* Semantic spacing (tokens/spacing.css) — the numeric scale itself already
+     matches Tailwind's default 4px grid, so only the named aliases are added. */
+  --spacing-screen-x: 22px;
+  --spacing-section: 28px;
+  --spacing-card-gap: 14px;
+  --spacing-stack: 10px;
+
+  /* Shadows (tokens/spacing.css) — overrides Tailwind's defaults so
+     shadow-xs/sm/md/lg match Baseline exactly. */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.07);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.09);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
+
+  /* Motion (tokens/spacing.css) */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Favourite/confirmation pop-in, used by ConfirmationScreen's check icon. */
+  --animate-pop: pop 0.5s cubic-bezier(0.2, 1.2, 0.4, 1);
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}

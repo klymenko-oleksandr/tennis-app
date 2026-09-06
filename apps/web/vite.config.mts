@@ -5,6 +5,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
 import { fileURLToPath } from 'node:url';
+import * as path from 'path';
 
 export default defineConfig(() => ({
   root: import.meta.dirname,
@@ -17,6 +18,10 @@ export default defineConfig(() => ({
   server: {
     port: 4200,
     host: 'localhost',
+    fs: {
+      // Absolute — see libs/ui/vite.config.mts for why relative was unreliable.
+      allow: [path.resolve(import.meta.dirname, '../..')],
+    },
   },
   preview: {
     port: 4200,
